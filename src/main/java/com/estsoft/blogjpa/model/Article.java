@@ -10,6 +10,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @EntityListeners(AuditingEntityListener.class)
@@ -34,6 +36,10 @@ public class Article {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    // Article과 Comment의 1:N 관계를 매핑합니다.
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
+
     @Builder
     public Article(String title, String content) {
         this.title = title;
@@ -57,5 +63,10 @@ public class Article {
     public void update(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+    // Comment 엔티티를 추가하는 편의 메소드
+    public void addComment(Comment comment) {
+        comments.add(comment);
+        comment.setArticle(this);
     }
 }
